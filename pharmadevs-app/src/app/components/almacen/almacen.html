@@ -1,0 +1,159 @@
+<div class="container mt-4">
+  <h1>Almacen</h1>
+
+  <div class="d-flex justify-content-center mb-3">
+    <button mat-raised-button color="primary" (click)="abrirModal()">
+      <mat-icon>add</mat-icon>
+      Agregar Almacen
+    </button>
+  </div>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Buscar</mat-label>
+    <input matInput (keyup)="filtroAlmacen($event)" placeholder="Buscar Almacen...">
+  </mat-form-field>
+
+  <div class="table-responsive">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-100">
+
+      <!-- detalles -->
+      <ng-container matColumnDef="detalles">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let a">
+          <button mat-icon-button color="primary" (click)="abrirModalDetalles(a)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- idAlmacen -->
+      <ng-container matColumnDef="idAlmacen">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <td mat-cell *matCellDef="let a">{{ a.idAlmacen }}</td>
+      </ng-container>
+
+      <!-- Stock -->
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
+        <td mat-cell *matCellDef="let a">{{ a.stock }}</td>
+      </ng-container>
+
+      <!-- Ubicacion -->
+      <ng-container matColumnDef="ubicacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ubicación</th>
+        <td mat-cell *matCellDef="let a">{{ a.ubicacion }}</td>
+      </ng-container>
+
+      <!-- producto -->
+      <ng-container matColumnDef="producto">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
+        <td mat-cell *matCellDef="let a">
+          {{ a.producto ? a.producto.nombre : '' }}
+        </td>
+      </ng-container>
+
+      <!-- acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let a">
+          <button class="btn btn-warning btn-sm me-1" (click)="abrirModal(a)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="almacen = a; delete()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="mostrarColumnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: mostrarColumnas;"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>
+
+<!-- Modal Crear/Editar -->
+<ng-template #modalAlmacen>
+  <mat-dialog-content>
+    <h2 mat-dialog-title>{{ editar ? 'Editar Almacen' : 'Agregar Almacen' }}</h2>
+
+    <!-- wrapper para scroll -->
+    <div #formularioAlmacen></div>
+
+    <form #formAlmacen="ngForm" novalidate>
+      <div class="row">
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Stock</mat-label>
+            <input matInput type="text" [(ngModel)]="almacen.stock" name="stock" required>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Ubicación</mat-label>
+            <input matInput type="text" [(ngModel)]="almacen.ubicacion" name="ubicacion" required>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Producto</mat-label>
+            <mat-select [(ngModel)]="almacen.producto" name="producto" required [compareWith]="compararProducto">
+              <mat-option *ngFor="let p of (productos || [])" [value]="p">
+                {{ p.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <div class="custom-file-upload">
+            <input #fileInput type="file" (change)="onFileSelected($event)" hidden>
+            <button mat-raised-button color="primary" (click)="fileInput.click()" style="margin-right:10px;">
+              Seleccionar Imagen
+            </button>
+            <span *ngIf="selectFile">{{ selectFile.name }}</span>
+            <button mat-raised-button color="primary" (click)="subirImagen()" >
+              Subir Imagen
+            </button>
+          </div>
+
+          <div class="imagen-container" *ngIf="almacen.imagen || imagenPreview">
+            <img
+              [src]="'http://localhost:8080/' + (imagenPreview || almacen.imagen)"
+              alt="Imagen del almacen"
+              class="imagen-almacen" />
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-flat-button color="primary" (click)="guardarAlmacen()" [disabled]="formAlmacen.invalid">
+      {{ editar ? 'Actualizar' : 'Guardar' }}
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- Modal Detalles -->
+<ng-template #modalDetalles let-data>
+  <h2 mat-dialog-title>Detalle de Almacen</h2>
+  <mat-dialog-content>
+    <div *ngIf="almacenSeleccionado?.imagen">
+      <img
+        [src]="'http://localhost:8080/' + almacenSeleccionado?.imagen"
+        alt="Imagen del Almacen"
+        style="width: 400px; margin-top: 1rem;" />
+    </div>
+    <p><strong>Stock: </strong>{{ almacenSeleccionado?.stock }}</p>
+    <p><strong>Ubicación: </strong>{{ almacenSeleccionado?.ubicacion }}</p>
+    <p><strong>Producto: </strong>{{ almacenSeleccionado?.producto?.nombre }}</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cerrarModal()">Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>

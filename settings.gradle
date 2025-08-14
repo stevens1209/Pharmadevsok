@@ -1,0 +1,2 @@
+rootProject.name = 'PharmaDevsOk'
+include 'PharmaDevs','PharmaDevsSpring'
