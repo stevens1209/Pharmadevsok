@@ -2,7 +2,6 @@ package com.pharmadevs.inventario_spring.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pharmadevs.inventario_spring.model.Produccion;
-import com.pharmadevs.inventario_spring.service.ProduccionService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

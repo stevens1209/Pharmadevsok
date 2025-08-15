@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { Produccion } from '../../model/produccion.model';
 import { Producto } from '../../model/producto.model';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,30 +10,31 @@ import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import Swal from 'sweetalert2';
 import { NgForm } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-produccion',
   standalone: false,
   templateUrl: './produccion.html',
-  styleUrls: ['./produccion.css']
+  styleUrl: './produccion.css'
 })
-export class ProduccionComponent implements OnInit, AfterViewInit {
+export class ProduccionComponent implements OnInit{
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  
   producciones: Produccion[] = [];
   productos: Producto[] = [];
   produccion: Produccion = {} as Produccion;
-  editar: boolean = false;
+  editar = false;
   idEditar: number | null = null;
   dataSource!: MatTableDataSource<Produccion>;
-  produccionSeleccionado: Produccion | null = null;
-  mostrarColumnas: string[] = ['detalles', 'idProuccion', 'Fechaproduccion', 'Fechavencimiento', 'Lote', 'Cantidadproducida', 'producto', 'acciones'];
-
-  imagenPreview: string = "";
   selectedFile!: File;
+  imagenPreview: string = "";
+  produccionSeleccionado: Produccion | null = null;
+  mostrarColumnas: string[] = ['detalles', 'idProduccion', 'fechaproduccion', 'fechavencimiento', 'lote', 'cantidadproducida', 'producto', 'acciones'];
 
+
+  @ViewChild('formularioProduccion') formularioProduccion!: ElementRef;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('modalProduccion') modalProducccion!: TemplateRef<any>;
   @ViewChild('modalDetalles') modalDetalles!: TemplateRef<any>;
 
@@ -41,7 +42,7 @@ export class ProduccionComponent implements OnInit, AfterViewInit {
     private produccionService: ProduccionService,
     private productoService: ProductoService,
     public dialog: MatDialog,
-    private datePipe: DatePipe
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -49,113 +50,18 @@ export class ProduccionComponent implements OnInit, AfterViewInit {
     this.cargarProductos();
   }
 
-  ngAfterViewInit(): void {
-    // Asegúrate de que dataSource ya se haya inicializado
-    if (this.dataSource) {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    }
-  }
-
   findAll(): void {
     this.produccionService.findAll().subscribe(data => {
-      this.producciones = data;
-      this.dataSource = new MatTableDataSource(this.producciones);
-      
-      // Asignar paginator y sort solo después de inicializar dataSource
-      if (this.paginator && this.sort) {
-        this.dataSource.paginator = this.paginator;
+      this.dataSource = new MatTableDataSource(data);
+        this.dataSource.paginator = this.paginator;    
         this.dataSource.sort = this.sort;
-      }
+    
     });
   }
 
   cargarProductos(): void {
     this.productoService.findAll().subscribe(data => {
       this.productos = data;
-    });
-  }
-
-  abrirModalProduccion(editar: boolean = false, produccion?: Produccion): void {
-    if (editar && produccion) {
-      this.produccion = { ...produccion };
-      this.editar = true;
-      this.idEditar = produccion.idProduccion;
-      this.imagenPreview = produccion.imagen ? produccion.imagen : "";
-    } else {
-      this.produccion = {} as Produccion;
-      this.editar = false;
-      this.idEditar = null;
-      this.imagenPreview = "";
-      this.selectedFile = undefined!;
-    }
-    this.dialog.open(this.modalProducccion);
-  }
-
-  abrirModalDetalles(produccion: Produccion): void {
-    this.produccionSeleccionado = produccion;
-    this.dialog.open(this.modalDetalles);
-  }
-
-  cancelarEdicion(form: NgForm): void {
-    this.produccion = {} as Produccion;
-    this.editar = false;
-    this.idEditar = null;
-    this.imagenPreview = "";
-    this.selectedFile = undefined!;
-    form.resetForm();
-    this.dialog.closeAll();
-  }
-
-  onFileSelected(event: any): void {
-    if(event.target.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = e => this.imagenPreview = reader.result as string;
-      reader.readAsDataURL(this.selectedFile);
-    }
-  }
-
-  guardarProduccion(): void {
-    if (this.selectedFile) {
-      this.subirImagen().then(imagenUrl => {
-        this.produccion.imagen = imagenUrl;
-        this.guardarDatosProduccion();
-      }).catch(() => {
-        Swal.fire('Error', 'No se pudo subir la imagen', 'error');
-      });
-    } else {
-      this.guardarDatosProduccion();
-    }
-  }
-
-  private guardarDatosProduccion(): void {
-    if (this.editar && this.idEditar !== null) {
-      this.update();
-    } else {
-      this.save();
-    }
-    this.dialog.closeAll();
-  }
-
-  private subirImagen(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-
-      fetch('http://localhost:8080/api/upload-portada', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.ruta) {
-          resolve(data.ruta);
-        } else {
-          reject();
-        }
-      })
-      .catch(() => reject());
     });
   }
 
@@ -167,7 +73,7 @@ export class ProduccionComponent implements OnInit, AfterViewInit {
   }
 
   update(): void {
-    if (this.idEditar) {
+    if (this.idEditar !== null) {
       this.produccionService.update(this.idEditar, this.produccion).subscribe(() => {
         this.produccion = {} as Produccion;
         this.editar = false;
@@ -177,7 +83,7 @@ export class ProduccionComponent implements OnInit, AfterViewInit {
     }
   }
 
-  delete(produccion: Produccion): void {
+  delete(): void {
     Swal.fire({
       title: '¿Desea eliminar la producción?',
       text: 'Esta acción no se puede deshacer',
@@ -189,16 +95,120 @@ export class ProduccionComponent implements OnInit, AfterViewInit {
       cancelButtonColor: '#3085d6'
     }).then(result => {
       if (result.isConfirmed) {
-        this.produccionService.delete(produccion.idProduccion).subscribe(() => {
+        this.produccionService.delete(this.produccion.idProduccion).subscribe(() => {
           this.findAll();
           Swal.fire('Eliminado', 'La producción ha sido eliminada', 'success');
         });
+      }else{
+        this.produccion = {} as Produccion;
       }
     });
   }
+
+  editarProduccion(produc: Produccion): void {
+    this.produccion = { ...produc };
+    this.idEditar = produc.idProduccion;
+    this.editar = true;
+
+    // Scroll suave al formulario (usa el wrapper #formularioAlmacen)
+    setTimeout(() => {
+      if (this.formularioProduccion?.nativeElement) {
+        this.formularioProduccion.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  editarProduccionCancelar(form: NgForm): void {
+    this.produccion = {} as Produccion;
+    this.idEditar = null;
+    this.editar = false;
+    form.resetForm();
+  }
+
+   guardarProduccion(): void {
+    if (this.editar && this.idEditar ! == null) {
+      this.update();
+      }else{
+        this.save;
+      }
+      this.dialog.closeAll();
+    }
+
+    filtroProduccion(event: Event): void {
+    const filtro = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filtro.trim().toLowerCase();
+     
+  }
+
+  nombreProducto(producto: Producto): string {
+    return `${producto?.nombre ?? ''}`;
+  }
+
+  abrirModalProduccion(produccion?: Produccion): void {
+    if (produccion) {
+      this.produccion = { ...produccion };
+      this.editar = true;
+      this.idEditar = produccion.idProduccion;
+    } else {
+      this.produccion = {} as Produccion;
+      this.editar = false;
+      this.idEditar = null;
+    }
+    this.dialog.open(this.modalProducccion,{
+      width: '800px',
+      disableClose: true
+    });
+  }
+
+  compararProducto(p1:Producto, p2:Producto): boolean{
+    return p1 && p2 ? p1.idProducto === p2.idProducto : p1 === p2;
+  }
+
+  onFileSelected(event: any): void { 
+    this.selectedFile = event.target.files[0];
+  }  
+
+  subirImagen(): void {
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    if(this.produccion.imagen){
+      formData.append('oldImage', this.produccion.imagen);
+    }
+
+    this.http.post<{ ruta: string}>('http://localhost:8080/api/upload-portada', formData)
+    .subscribe(res =>{
+      this.produccion.imagen = res.ruta;
+      this.imagenPreview = res.ruta;
+    })
+  }
+
+  abrirModalDetalles(produccion: Produccion): void {
+    this.produccionSeleccionado = produccion;
+    this.dialog.open(this.modalDetalles);
+  }
+
+  cerrarModal(): void {
+    this.dialog.closeAll();
+    this.produccionSeleccionado = null;
+  }
+
 
   buscarProduccion(event: Event): void {
     const filtro = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filtro.trim().toLowerCase();
   }
+
+  cancelarEdicion(form: NgForm): void {
+    this.produccion = {} as Produccion;
+    this.editar = false;
+    this.idEditar = null;
+    this.imagenPreview = "";
+    this.selectedFile = undefined!;
+    form.resetForm();
+    this.dialog.closeAll();
+  }
+ 
+ 
+  
 }

@@ -1,72 +1,78 @@
-<div class="container mt-4">
 
+<div class="container mt-4">
   <h1>Gestión de Producción</h1>
 
-  <mat-form-field appearance="outline" class="filter-input">
-    <mat-label>Buscar producción</mat-label>
-    <input matInput (keyup)="buscarProduccion($event)" placeholder="Filtrar por cualquier campo...">
-    <mat-icon matSuffix>search</mat-icon>
+  <div class="d-flex justify-content-center mb-3">
+    <button mat-raised-button color="primary" (click)="abrirModalProduccion()">
+      <mat-icon>add</mat-icon>
+      Agregar Producción
+    </button>
+  </div>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Buscar</mat-label>
+    <input matInput (keyup)="filtroProduccion($event)" placeholder="Buscar Producción...">
   </mat-form-field>
 
-  <button mat-raised-button color="primary" (click)="abrirModalProduccion()">Nueva Producción</button>
+  <div class="table-responsive">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-100">
 
-  <div class="table-container" style="margin-top: 16px;">
-    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-
-      <!-- Detalles -->
+      <!-- detalles -->
       <ng-container matColumnDef="detalles">
-        <th mat-header-cell *matHeaderCellDef> Detalles </th>
-        <td mat-cell *matCellDef="let produccion">
-          <button mat-icon-button color="accent" (click)="abrirModalDetalles(produccion)">
-            <mat-icon>info</mat-icon>
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let p">
+          <button mat-icon-button color="primary" (click)="abrirModalDetalles(p)">
+            <mat-icon>visibility</mat-icon>
           </button>
         </td>
       </ng-container>
 
-      <!-- ID Producción -->
-      <ng-container matColumnDef="idProuccion">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let produccion"> {{produccion.idProduccion}} </td>
+      <!-- idProduccion -->
+      <ng-container matColumnDef="idProduccion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <td mat-cell *matCellDef="let p">{{ p.idProduccion }}</td>
       </ng-container>
 
-      <!-- Fecha Producción -->
-      <ng-container matColumnDef="Fechaproduccion">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Producción </th>
-        <td mat-cell *matCellDef="let produccion"> {{produccion.fechaproduccion | date:'dd/MM/yyyy'}} </td>
+      <!-- fechaProduccion -->
+      <ng-container matColumnDef="fechaproduccion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de Producción</th>
+        <td mat-cell *matCellDef="let p">{{ p.fechaproduccion | date }}</td>
       </ng-container>
 
-      <!-- Fecha Vencimiento -->
-      <ng-container matColumnDef="Fechavencimiento">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Vencimiento </th>
-        <td mat-cell *matCellDef="let produccion"> {{produccion.fechavencimiento | date:'dd/MM/yyyy'}} </td>
+      <!-- fechaVencimiento -->
+      <ng-container matColumnDef="fechavencimiento">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de Vencimiento</th>
+        <td mat-cell *matCellDef="let p">{{ p.fechavencimiento | date }}</td>
       </ng-container>
 
       <!-- Lote -->
-      <ng-container matColumnDef="Lote">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Lote </th>
-        <td mat-cell *matCellDef="let produccion"> {{produccion.lote}} </td>
+      <ng-container matColumnDef="lote">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Lote</th>
+        <td mat-cell *matCellDef="let p">{{ p.lote }}</td>
       </ng-container>
 
       <!-- Cantidad Producida -->
-      <ng-container matColumnDef="Cantidadproducida">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Cantidad Producida </th>
-        <td mat-cell *matCellDef="let produccion"> {{produccion.cantidadproducida}} </td>
+      <ng-container matColumnDef="cantidadproducida">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad Producida</th>
+        <td mat-cell *matCellDef="let p">{{ p.cantidadproducida }}</td>
       </ng-container>
 
       <!-- Producto -->
       <ng-container matColumnDef="producto">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Producto </th>
-        <td mat-cell *matCellDef="let produccion"> {{produccion.producto?.nombre || 'N/A'}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
+        <td mat-cell *matCellDef="let p">
+          {{ p.producto ? p.producto.nombre : '' }}
+        </td>
       </ng-container>
 
-      <!-- Acciones -->
+      <!-- acciones -->
       <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef> Acciones </th>
-        <td mat-cell *matCellDef="let produccion">
-          <button mat-icon-button color="primary" (click)="abrirModalProduccion(true, produccion)">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let p">
+          <button class="btn btn-warning btn-sm me-1" (click)="abrirModalProduccion(p)">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="delete(produccion)">
+          <button class="btn btn-danger btn-sm" (click)="produccion = p; delete()">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -76,85 +82,111 @@
       <tr mat-row *matRowDef="let row; columns: mostrarColumnas;"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
   </div>
-
-  <!-- Modal Form Producción -->
-  <ng-template #modalProduccion>
-    <h2 mat-dialog-title>{{ editar ? 'Editar Producción' : 'Nueva Producción' }}</h2>
-    <mat-dialog-content>
-      <form #formProduccion="ngForm">
-
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Fecha Producción</mat-label>
-          <input matInput [matDatepicker]="picker1" [(ngModel)]="produccion.fechaproduccion" name="fechaproduccion" required placeholder="Seleccione fecha de producción">
-          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-          <mat-datepicker #picker1></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Fecha Vencimiento</mat-label>
-          <input matInput [matDatepicker]="picker2" [(ngModel)]="produccion.fechavencimiento" name="fechavencimiento" required placeholder="Seleccione fecha de vencimiento">
-          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-          <mat-datepicker #picker2></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Lote</mat-label>
-          <input matInput [(ngModel)]="produccion.lote" name="lote" required maxlength="50" placeholder="Ingrese lote">
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Cantidad Producida</mat-label>
-          <input matInput type="number" min="1" [(ngModel)]="produccion.cantidadproducida" name="cantidadproducida" required placeholder="Ingrese cantidad producida">
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Producto</mat-label>
-          <mat-select [(ngModel)]="produccion.producto" name="producto" required>
-            <mat-option *ngFor="let producto of productos" [value]="producto">
-              {{producto.nombre}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <div class="full-width" style="margin-top: 15px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Imagen</label>
-          <input type="file" (change)="onFileSelected($event)" accept="image/*" />
-        </div>
-
-        <div *ngIf="imagenPreview" style="margin-top: 10px;">
-          <img [src]="imagenPreview" alt="Vista previa imagen" style="max-width: 200px; max-height: 150px; border-radius: 4px;" />
-        </div>
-
-      </form>
-    </mat-dialog-content>
-
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="cancelarEdicion(formProduccion)">Cancelar</button>
-      <button mat-flat-button color="primary" [disabled]="!formProduccion.form.valid" (click)="guardarProduccion()">Guardar</button>
-    </mat-dialog-actions>
-  </ng-template>
-
-  <!-- Modal Detalles -->
-  <ng-template #modalDetalles>
-    <h2 mat-dialog-title>Detalles Producción</h2>
-    <mat-dialog-content *ngIf="produccionSeleccionado">
-      <p><strong>ID:</strong> {{produccionSeleccionado.idProduccion}}</p>
-      <p><strong>Fecha Producción:</strong> {{produccionSeleccionado.fechaproduccion | date:'dd/MM/yyyy'}}</p>
-      <p><strong>Fecha Vencimiento:</strong> {{produccionSeleccionado.fechavencimiento | date:'dd/MM/yyyy'}}</p>
-      <p><strong>Lote:</strong> {{produccionSeleccionado.lote}}</p>
-      <p><strong>Cantidad Producida:</strong> {{produccionSeleccionado.cantidadproducida}}</p>
-      <p><strong>Producto:</strong> {{produccionSeleccionado.producto.nombre}}</p>
-
-      <div *ngIf="produccionSeleccionado.imagen" style="margin-top: 15px;">
-        <strong>Imagen:</strong><br />
-        <img [src]="'http://localhost:8080/' + produccionSeleccionado.imagen" alt="Imagen producción" style="max-width: 300px; max-height: 200px; border-radius: 4px; margin-top: 8px;" />
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="dialog.closeAll()">Cerrar</button>
-    </mat-dialog-actions>
-  </ng-template>
-
 </div>
+
+<!-- Modal Crear/Editar -->
+<ng-template #modalProduccion>
+  <mat-dialog-content>
+    <h2 mat-dialog-title>{{ editar ? 'Editar Producción' : 'Agregar Producción' }}</h2>
+
+    <!-- wrapper para scroll -->
+    <div #formularioProduccion></div>
+
+    <form #formProduccion="ngForm" novalidate>
+      <div class="row">
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fecha de Produccion</mat-label>
+            <input matInput [matDatepicker]="pickerProduccion" [(ngModel)]="produccion.fechaproduccion" name="fechavencimiento" required>
+            <mat-datepicker-toggle matSuffix [for]="pickerProduccion"></mat-datepicker-toggle>
+            <mat-datepicker #pickerProduccion></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fecha de Vencimiento</mat-label>
+            <input matInput [matDatepicker]="pickerVencimiento" [(ngModel)]="produccion.fechavencimiento" name="fechavencimiento" required>
+            <mat-datepicker-toggle matSuffix [for]="pickerVencimiento"></mat-datepicker-toggle>
+            <mat-datepicker #pickerVencimiento></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Lote</mat-label>
+            <input matInput type="text" [(ngModel)]="produccion.lote" name="lote" required>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Cantidad Producida</mat-label>
+            <input matInput type="number" [(ngModel)]="produccion.cantidadproducida" name="cantidadproducida" required>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Producto</mat-label>
+            <mat-select [(ngModel)]="produccion.producto" name="producto" required [compareWith]="compararProducto">
+              <mat-option *ngFor="let p of (productos || [])" [value]="p">
+                {{ p.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <div class="custom-file-upload">
+            <input #fileInput type="file" (change)="onFileSelected($event)" hidden>
+            <button mat-raised-button color="primary" (click)="fileInput.click()" style="margin-right:10px;">
+              Seleccionar Imagen
+            </button>
+            <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+            <button mat-raised-button color="primary" (click)="subirImagen()">
+              Subir Imagen
+            </button>
+          </div>
+
+          <div class="imagen-container" *ngIf="produccion.imagen || imagenPreview">
+            <img
+              [src]="'http://localhost:8080/' + (imagenPreview || produccion.imagen)"
+              alt="Imagen de Producción"
+              class="imagen-produccion" />
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-flat-button color="primary" (click)="guardarProduccion()" [disabled]="formProduccion.invalid">
+      {{ editar ? 'Actualizar' : 'Guardar' }}
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- Modal Detalles -->
+<ng-template #modalDetalles let-data>
+  <h2 mat-dialog-title>Detalle de Producción</h2>
+  <mat-dialog-content>
+    <div *ngIf="produccionSeleccionado?.imagen">
+      <img
+        [src]="'http://localhost:8080/' + produccionSeleccionado?.imagen"
+        alt="Imagen de Producción"
+        style="width: 400px; margin-top: 1rem;" />
+    </div>
+    <p><strong>Fecha de Producción: </strong>{{ produccionSeleccionado?.fechaproduccion | date }}</p>
+    <p><strong>Fecha de Vencimiento: </strong>{{ produccionSeleccionado?.fechavencimiento | date }}</p>
+    <p><strong>Lote: </strong>{{ produccionSeleccionado?.lote }}</p>
+    <p><strong>Cantidad Producida: </strong>{{ produccionSeleccionado?.cantidadproducida }}</p>
+    <p><strong>Producto: </strong>{{ produccionSeleccionado?.producto?.nombre }}</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cerrarModal()">Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>

@@ -5,10 +5,12 @@ import com.pharmadevs.inventario_spring.model.Produccion;
 import java.util.List;
 
 public interface ProduccionService {
-    List<Produccion> findAll();
+    public List<Produccion> findAll();
+
     Produccion findById(int id);
-    Produccion findOne(int id);
-    Produccion save(Produccion produccion);
-    Produccion update(int id, Produccion produccion);
-    void delete(int id);
+
+    public Produccion findOne(int id);
+    public Produccion save(Produccion produccion);
+   public  Produccion update(int id, Produccion produccion);
+    public void delete(int id);
 }

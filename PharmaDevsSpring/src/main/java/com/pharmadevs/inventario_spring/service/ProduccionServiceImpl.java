@@ -24,6 +24,7 @@ public class ProduccionServiceImpl implements ProduccionService {
         return produccionRepositorio.findById(id).orElse(null);
     }
 
+
     @Override
     public Produccion findOne(int id){
         Optional<Produccion> produccion = produccionRepositorio.findById(id);
@@ -36,17 +37,19 @@ public class ProduccionServiceImpl implements ProduccionService {
     }
 
     @Override
-        public Produccion update(int id, Produccion produccionNuevo){
+    public Produccion update(int id, Produccion produccionNuevo){
         Produccion produccionExistente = findOne(id);
 
         if (produccionExistente == null){
             return null;
         }
 
-        produccionExistente.setCantidadproducida(produccionNuevo.getCantidadproducida());
-        produccionExistente.setFechaproduccion(produccionNuevo.getFechaproduccion());
+
+        produccionExistente.setFechaproduccion(produccionNuevo.getfechaproduccion());
         produccionExistente.setFechavencimiento(produccionNuevo.getFechavencimiento());
         produccionExistente.setLote(produccionNuevo.getLote());
+        produccionExistente.setCantidadproducida(produccionNuevo.getCantidadproducida());
+        produccionExistente.setImagen(produccionNuevo.getImagen());
 
 
         return produccionRepositorio.save(produccionExistente);

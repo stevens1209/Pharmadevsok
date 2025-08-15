@@ -1,7 +1,6 @@
 package com.pharmadevs.inventario_spring.controller;
 
 import com.pharmadevs.inventario_spring.model.Proveedor;
-import com.pharmadevs.inventario_spring.service.ProduccionService;
 import com.pharmadevs.inventario_spring.service.ProveedorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

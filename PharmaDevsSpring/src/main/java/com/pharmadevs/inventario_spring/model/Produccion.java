@@ -12,16 +12,19 @@ public class Produccion {
     private int idProduccion;
 
     @Column(name ="Fecha_Producción")
-    private Date Fechaproduccion;
+    private Date fechaproduccion;
 
     @Column(name ="Fecha_Vencimiento")
-    private Date Fechavencimiento;
+    private Date fechavencimiento;
 
     @Column(name ="Lote")
-    private String Lote;
+    private String lote;
 
     @Column(name ="Cantidad_Producida")
-    private String Cantidadproducida;
+    private int cantidadproducida;
+
+    @Column(name="imagen")
+    private String imagen;
 
 
     @ManyToOne
@@ -31,13 +34,14 @@ public class Produccion {
     public Produccion() {
     }
 
-    public Produccion(int idProduccion, Date fechaproduccion, Date fechavencimiento, String lote, String cantidadproducida) {
+    public Produccion(int idProduccion, Date fechaproduccion, Date fechavencimiento, String lote, int cantidadproducida, String imagen, Producto producto) {
         this.idProduccion = idProduccion;
-        Fechaproduccion = fechaproduccion;
-        Fechavencimiento = fechavencimiento;
-        Lote = lote;
-        Cantidadproducida = cantidadproducida;
-        producto = producto;
+        this.fechaproduccion = fechaproduccion;
+        this.fechavencimiento = fechavencimiento;
+        this.lote = lote;
+        this.cantidadproducida = cantidadproducida;
+        this.imagen = imagen;
+        this.producto = producto;
     }
 
     public int getIdProduccion() {
@@ -48,36 +52,44 @@ public class Produccion {
         this.idProduccion = idProduccion;
     }
 
-    public Date getFechaproduccion() {
-        return Fechaproduccion;
+    public Date getfechaproduccion() {
+        return fechaproduccion;
     }
 
     public void setFechaproduccion(Date fechaproduccion) {
-        Fechaproduccion = fechaproduccion;
+        this.fechaproduccion = fechaproduccion;
     }
 
     public Date getFechavencimiento() {
-        return Fechavencimiento;
+        return fechavencimiento;
     }
 
     public void setFechavencimiento(Date fechavencimiento) {
-        Fechavencimiento = fechavencimiento;
+        this.fechavencimiento = fechavencimiento;
     }
 
     public String getLote() {
-        return Lote;
+        return lote;
     }
 
     public void setLote(String lote) {
-        Lote = lote;
+        this.lote = lote;
     }
 
-    public String getCantidadproducida() {
-        return Cantidadproducida;
+    public int getCantidadproducida() {
+        return cantidadproducida;
     }
 
-    public void setCantidadproducida(String cantidadproducida) {
-        Cantidadproducida = cantidadproducida;
+    public void setCantidadproducida(int cantidadproducida) {
+        this.cantidadproducida = cantidadproducida;
+    }
+
+    public String getImagen(){
+        return imagen;
+    }
+
+    public void setImagen(String imagen){
+        this.imagen=imagen;
     }
 
     public Producto getProducto() {
@@ -92,11 +104,12 @@ public class Produccion {
     public String toString() {
         return "Produccion{" +
                 "idProduccion=" + idProduccion +'\'' +
-                ", Fechaproduccion=" + Fechaproduccion +'\'' +
-                ", Fechavencimiento=" + Fechavencimiento +'\'' +
-                ", Lote='" + Lote + '\'' +
-                ", Cantidadproducida='" + Cantidadproducida + '\'' +
-                ", Producto='" + producto + '\'' +
+                ", fechaproduccion=" + fechaproduccion +'\'' +
+                ", fechavencimiento=" + fechavencimiento +'\'' +
+                ", lote='" + lote + '\'' +
+                ", cantidadproducida='" + cantidadproducida + '\'' +
+                ",imagen='" + imagen +'\''+
+                ", producto='" + producto + '\'' +
                 '}';
     }
 }
