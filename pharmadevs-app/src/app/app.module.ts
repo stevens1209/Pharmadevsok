@@ -25,6 +25,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { DatePipe } from '@angular/common';
 import { AlmacenComponent } from './components/almacen/almacen';
+import { BodegaComponent } from './components/bodega/bodega';
+import { VentasComponent } from './components/ventas/ventas';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { AlmacenComponent } from './components/almacen/almacen';
     ProductoComponent,
     ProveedorComponent,
     ProduccionComponent,
-    AlmacenComponent
+    AlmacenComponent,
+    BodegaComponent,
+    VentasComponent
   ],
   imports: [
     BrowserModule,

@@ -30,13 +30,13 @@ public class Ventas {
     public Ventas() {
     }
 
-    public Ventas(int idVentas, Date fechaventa, String formapago, String totalventa) {
+    public Ventas(int idVentas, Date fechaventa, String formapago, String totalventa, Cliente cliente, Facturaventa facturaventa) {
         this.idVentas = idVentas;
-        Fechaventa = fechaventa;
-        Formapago = formapago;
-        Totalventa = totalventa;
-        cliente = cliente;
-        facturaventa = facturaventa;
+        this.Fechaventa = fechaventa;
+        this.Formapago = formapago;
+        this.Totalventa = totalventa;
+        this.cliente = cliente;
+        this.facturaventa = facturaventa;
     }
 
     public int getIdVentas() {

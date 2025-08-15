@@ -129,7 +129,7 @@ export class ProduccionComponent implements OnInit{
     if (this.editar && this.idEditar ! == null) {
       this.update();
       }else{
-        this.save;
+        this.save();
       }
       this.dialog.closeAll();
     }
