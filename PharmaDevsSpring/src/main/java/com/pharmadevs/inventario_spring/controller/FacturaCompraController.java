@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
-@RequestMapping("/Facturaventa")
+@RequestMapping("/api/facturacompra")
 public class FacturaCompraController {
     @Autowired
     private FacturaCompraService facturaCompraService;

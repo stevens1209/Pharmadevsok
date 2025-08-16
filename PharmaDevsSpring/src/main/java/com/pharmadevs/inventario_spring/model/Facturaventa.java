@@ -18,6 +18,9 @@ public class Facturaventa {
     @Column(name ="Monto_Total")
     private String Montototal;
 
+    @Column(name = "facventa")
+    private String facventa;
+
     @ManyToOne
     @JoinColumn(name = "ID_Cliente")
     private Cliente cliente;
@@ -25,11 +28,12 @@ public class Facturaventa {
     public Facturaventa() {
     }
 
-    public Facturaventa(int idFacturaventa, Date fecha, String montototal) {
+    public Facturaventa(int idFacturaventa, Date fecha, String montototal, String facventa, Cliente cliente) {
         this.idFacturaventa = idFacturaventa;
         Fecha = fecha;
         Montototal = montototal;
-        cliente = cliente;
+        this.facventa = facventa;
+        this.cliente = cliente;
     }
 
     public int getIdFacturaventa() {
@@ -56,6 +60,14 @@ public class Facturaventa {
         Montototal = montototal;
     }
 
+    public String getFacventa() {
+        return facventa;
+    }
+
+    public void setFacventa(String facventa) {
+        this.facventa = facventa;
+    }
+
     public Cliente getCliente() {
         return cliente;
     }
@@ -66,11 +78,12 @@ public class Facturaventa {
 
     @Override
     public String toString() {
-        return "Facturaventa{" +'\'' +
-                "idFacturaventa=" + idFacturaventa +'\'' +
-                ", Fecha=" + Fecha +'\'' +
+        return "Facturaventa{" +
+                "idFacturaventa=" + idFacturaventa +
+                ", Fecha=" + Fecha +
                 ", Montototal='" + Montototal + '\'' +
-                ", Cliente='" + cliente + '\'' +
+                ", facventa='" + facventa + '\'' +
+                ", cliente=" + cliente +
                 '}';
     }
 }

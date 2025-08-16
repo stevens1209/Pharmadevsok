@@ -1,1 +1,152 @@
-<p>factura-venta works!</p>
+<div class="container mt-4">
+    <h1>Gestion de facturas Ventas </h1>
+    <div class="d-flex justify-content-center mb-3">
+        <button mat-raised-button color="primary" (click)="abrirModal()">
+            <mat-icon>add</mat-icon>Agregar Factura
+        </button>
+    </div>
+<!-- Libro -->
+    <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="filtroFacventa($event)" placeholder="Buscar Factura...">
+    </mat-form-field>
+
+    <div class="table-responsive">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-100" >
+            <ng-container matColumnDef="detalles">  
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let fv">
+                    <button mat-icon-button color="primary" (click)="abrirModalDetalles(fv)">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="idFacturaventa">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                <td mat-cell *matCellDef="let fv">{{fv.idFacturaventa}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+                <td mat-cell *matCellDef="let fv">{{fv.fecha | date: 'yyyy-MM-dd'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="montototal">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto total</th>
+                <td mat-cell *matCellDef="let fv">{{fv.montototal | currency}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="facventa">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Factura</th>
+                <td mat-cell *matCellDef="let fv">{{fv.facventa}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="cliente">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
+                <td mat-cell *matCellDef="let fv">{{nombreCompletoCliente(fv.cliente)}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
+                <td mat-cell *matCellDef="let fv">
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-warning btn-sm me-1" (click)="abrirModal(fv)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button class="btn btn-danger btn-sm" (click)="facturaventa = fv; delete()">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="mostrarColumnas"></tr>
+            <tr mat-row *matRowDef="let row; columns: mostrarColumnas;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5,10,25]" showFirstLastButtons></mat-paginator>
+    </div>
+</div>
+
+
+<ng-template #modalFacturaVenta>
+    <mat-dialog-content>
+        <h2 mat-dialog-title>{{editar ? 'Editar factura' : 'Agregar factura'}}</h2>
+
+        <form #formLibro="ngForm" novalidate>
+            <div class="row">
+                <div class="col-md-12 mb-2">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Fecha</mat-label>
+                        <input matInput [matDatepicker]="picker" [(ngModel)]="facturaventa.fecha" name="fecha" required />
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                 <div class="col-md-12 mb-2">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Monto total</mat-label>
+                        <input matInput type="text" [(ngModel)]="facturaventa.montototal" name="montototal" required />
+                    </mat-form-field>
+                </div>
+
+
+                <div class="col-md-6 mb-2">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Cliente</mat-label>
+                        <mat-select [(ngModel)]="facturaventa.cliente" name="cliente" required [compareWith]="compararClientes">
+                            <mat-option *ngFor="let c of clientes" [value]="c">{{nombreCompletoCliente(c)}}</mat-option>
+                        </mat-select>
+                        </mat-form-field>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <div class="custom-file-upload">
+                        <input #fileInput type="file" (change)="onFileSelected($event)" hidden>
+                        <button mat-raised-button color="primary" (click)="fileInput.click()" style="margin-right: 10px;">
+                            Seleccionar Archivo
+                        </button>
+                        <span *ngIf="selectedFile">{{selectedFile.name}}</span>
+                        <button mat-raised-button color="primary" (click)="subirfactura()">
+                            Subir Archivo
+                        </button>
+                    </div>
+
+                    <div class="factura-container" *ngIf="facturaventa.facventa || imagenPreview">
+                        <img
+                            [src]="'http://localhost:8080/' + (imagenPreview || facturaventa.facventa)"
+                            alt="Factura"
+                            class="imagen-factura"
+                        >
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancelar</button>
+        <button mat-flat-button color="primary" (click)="guardarFacventa()" [disabled]="formLibro.invalid">
+            {{editar? 'Actualizar' : 'Guardar'}}
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<!-- Modal para detalles -->
+<ng-template #modalDetalles let-data >
+    <h2 mat-dialog-title>Detalles de la factura</h2>
+    <mat-dialog-content>
+        <div *ngIf="facturaSeleccionada?.facventa">
+            <img [src]="'http://localhost:8080/' + facturaSeleccionada?.facventa" 
+            alt="Factura ventas"
+            style="width: 400px; margin-top:  1rem;"/>
+        </div>
+        <p><strong>Fecha</strong>{{facturaSeleccionada?.fecha}}</p>
+        <p><strong>Monto total</strong>{{facturaSeleccionada?.montototal | currency}}</p>
+        <p><strong>Cliente</strong>{{facturaSeleccionada?.cliente?.nombre}}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="cerrarModal()">Cerrar</button>
+    </mat-dialog-actions>
+</ng-template> 

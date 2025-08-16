@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BodegaService {
-  private baseUrl = 'http://localhost:8080/bodega'
+  private baseUrl = 'http://localhost:8080/api/bodega'
   constructor(private http: HttpClient){}
 
   findAll(bodega?: Bodega): Observable<Bodega[]>{

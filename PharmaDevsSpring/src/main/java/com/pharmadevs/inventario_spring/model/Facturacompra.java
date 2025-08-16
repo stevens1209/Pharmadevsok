@@ -18,6 +18,9 @@ public class Facturacompra {
     @Column(name ="Monto_Total")
     private String Montototal;
 
+    @Column(name = "faccompra")
+    private String faccompra;
+
     //Patron de inyeccion de dependecias
     @ManyToOne
     @JoinColumn(name = "ID_Proveedor")
@@ -26,11 +29,12 @@ public class Facturacompra {
     public Facturacompra() {
     }
 
-    public Facturacompra(int idFacturacompra, Date fecha, String montototal) {
+    public Facturacompra(int idFacturacompra, Date fecha, String montototal, String faccompra, Proveedor proveedor) {
         this.idFacturacompra = idFacturacompra;
         Fecha = fecha;
         Montototal = montototal;
-        proveedor = proveedor;
+        this.faccompra = faccompra;
+        this.proveedor = proveedor;
     }
 
     public int getIdFacturacompra() {
@@ -57,6 +61,14 @@ public class Facturacompra {
         Montototal = montototal;
     }
 
+    public String getFaccompra() {
+        return faccompra;
+    }
+
+    public void setFaccompra(String faccompra) {
+        this.faccompra = faccompra;
+    }
+
     public Proveedor getProveedor() {
         return proveedor;
     }
@@ -68,10 +80,11 @@ public class Facturacompra {
     @Override
     public String toString() {
         return "Facturacompra{" +
-                "idFacturacompra=" + idFacturacompra +'\'' +
-                ", Fecha=" + Fecha +'\'' +
+                "idFacturacompra=" + idFacturacompra +
+                ", Fecha=" + Fecha +
                 ", Montototal='" + Montototal + '\'' +
-                ", Proveedor='" + proveedor + '\'' +
+                ", faccompra='" + faccompra + '\'' +
+                ", proveedor=" + proveedor +
                 '}';
     }
 }

@@ -5,7 +5,8 @@ export interface FacturaVenta {
     idFacturaventa:number;
     fecha: Date;
     montototal: number;
-   cliente: Cliente;
+    facventa?: string;
+    cliente: Cliente;
 
     [key: string]: any;
 }

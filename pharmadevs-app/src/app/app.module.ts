@@ -27,6 +27,9 @@ import { DatePipe } from '@angular/common';
 import { AlmacenComponent } from './components/almacen/almacen';
 import { BodegaComponent } from './components/bodega/bodega';
 import { VentasComponent } from './components/ventas/ventas';
+import { FacturaVentaComponent } from './components/factura-venta/factura-venta';
+import { FacturaCompraService } from './services/factura-compra';
+import { FacturaCompraComponent } from './components/factura-compra/factura-compra';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,9 @@ import { VentasComponent } from './components/ventas/ventas';
     ProduccionComponent,
     AlmacenComponent,
     BodegaComponent,
-    VentasComponent
+    VentasComponent,
+    FacturaVentaComponent,
+    FacturaCompraComponent
   ],
   imports: [
     BrowserModule,

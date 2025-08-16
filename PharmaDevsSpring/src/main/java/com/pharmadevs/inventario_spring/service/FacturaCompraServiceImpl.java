@@ -46,6 +46,7 @@ public class FacturaCompraServiceImpl implements FacturaCompraService{
 
         facturacompraExistente.setFecha(facturacompraNuevo.getFecha());
         facturacompraExistente.setMontototal(facturacompraNuevo.getMontototal());
+        facturacompraExistente.setFaccompra(facturacompraNuevo.getFaccompra());
 
         return facturaCompraRepositorio.save(facturacompraExistente);
     }

@@ -5,7 +5,8 @@ export interface FacturaCompra {
     idFacturacompra:number;
     fecha: Date;
     montototal: number;
-   proveedor: Proveedor
+    faccompra?: string;
+    proveedor: Proveedor
 
     [key: string]: any;
 }

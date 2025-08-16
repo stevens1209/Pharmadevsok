@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bodega")
+@RequestMapping("/api/bodega")
 public class BodegaController {
     @Autowired
     private BodegaService bodegaService;
